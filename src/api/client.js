@@ -2,9 +2,10 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // ⚠️ آدرس API سرور خودت رو اینجا بذار
-const BASE_URL = 'http://10.0.2.2:8000/api'; // اندروید امولاتور
+// const BASE_URL = 'http://10.0.2.2:8000/api'; // اندروید امولاتور
 // const BASE_URL = 'http://localhost:8000/api'; // iOS امولاتور
 // const BASE_URL = 'https://your-domain.com/api'; // سرور واقعی
+const BASE_URL = 'http://192.168.0.2/api'; // سرور واقعی
 
 const api = axios.create({
   baseURL: BASE_URL,
