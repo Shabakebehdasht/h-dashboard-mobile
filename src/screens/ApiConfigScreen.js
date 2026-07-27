@@ -6,6 +6,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_URL_KEY = 'api_base_url';
+const DEFAULT_API_URL = 'https://tester-hermes.boxd.sh';
 
 export default function ApiConfigScreen({ onConfigured }) {
   const [url, setUrl] = useState('');
@@ -19,7 +20,8 @@ export default function ApiConfigScreen({ onConfigured }) {
   const loadSavedUrl = async () => {
     try {
       const saved = await AsyncStorage.getItem(API_URL_KEY);
-      if (saved) setUrl(saved);
+      if (saved) { setUrl(saved); }
+      else { setUrl(DEFAULT_API_URL); }
     } catch (e) {
       console.log('Error loading API URL:', e);
     }

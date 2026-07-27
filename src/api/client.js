@@ -2,6 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_URL_KEY = 'api_base_url';
+const DEFAULT_API_URL = 'https://tester-hermes.boxd.sh/api';
 
 let apiInstance = null;
 
@@ -48,11 +49,9 @@ export async function getApi() {
   if (apiInstance) return apiInstance;
 
   const savedUrl = await AsyncStorage.getItem(API_URL_KEY);
-  if (!savedUrl) {
-    throw new Error('آدرس API تنظیم نشده است. لطفاً ابتدا آدرس سرور را وارد کنید.');
-  }
-
-  apiInstance = await createApiClient(savedUrl);
+  const baseURL = savedUrl || DEFAULT_API_URL;
+  
+  apiInstance = await createApiClient(baseURL);
   return apiInstance;
 }
 

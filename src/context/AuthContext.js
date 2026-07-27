@@ -22,7 +22,9 @@ export function AuthProvider({ children }) {
       // اول چک کن API تنظیم شده یا نه
       const apiUrl = await AsyncStorage.getItem(API_URL_KEY);
       if (!apiUrl) {
-        setApiConfigured(false);
+        // API پیش‌فرض ست نشده — ولی از اونجایی که client.js از DEFAULT_API_URL استفاده می‌کنه
+        // می‌ذاریم بگذره تا username/password وارد کنه
+        setApiConfigured(true);
         setLoading(false);
         return;
       }
