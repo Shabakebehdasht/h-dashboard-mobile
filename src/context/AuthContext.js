@@ -1,21 +1,35 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authAPI } from '../api/client';
+import { authAPI, getApiBaseUrl } from '../api/client';
 
 const AuthContext = createContext(null);
+
+const API_URL_KEY = 'api_base_url';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [apiConfigured, setApiConfigured] = useState(false);
 
-  // بررسی توکن ذخیره شده هنگام شروع
+  // بررسی وضعیت اولیه
   useEffect(() => {
-    loadStoredAuth();
+    initializeApp();
   }, []);
 
-  const loadStoredAuth = async () => {
+  const initializeApp = async () => {
     try {
+      // اول چک کن API تنظیم شده یا نه
+      const apiUrl = await AsyncStorage.getItem(API_URL_KEY);
+      if (!apiUrl) {
+        setApiConfigured(false);
+        setLoading(false);
+        return;
+      }
+
+      setApiConfigured(true);
+
+      // بعد چک کن توکن ذخیره شده
       const storedToken = await AsyncStorage.getItem('auth_token');
       const storedUser = await AsyncStorage.getItem('user_data');
       if (storedToken && storedUser) {
@@ -23,7 +37,7 @@ export function AuthProvider({ children }) {
         setUser(JSON.parse(storedUser));
       }
     } catch (e) {
-      console.log('خطا در بارگذاری اطلاعات ورود:', e);
+      console.log('خطا در بارگذاری:', e);
     } finally {
       setLoading(false);
     }
@@ -60,7 +74,12 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user, token, loading, login, logout,
+        apiConfigured, setApiConfigured, initializeApp,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
