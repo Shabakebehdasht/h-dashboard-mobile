@@ -1,0 +1,189 @@
+name: Build Android APK
+
+# Builds a release/debug APK from this Expo (managed) project using a local
+# Gradle build on a GitHub-hosted Linux runner, then uploads the APK as a
+# GitHub Release.
+#
+# Strategy (local Gradle — no EAS account needed):
+#   1. `expo prebuild --no-install` to generate the /android native project
+#   2. `./gradlew assembleRelease` to build the APK
+#   3. `gh release create` to publish it to GitHub Releases
+#
+# SECRETS YOU MAY NEED TO SET:
+#   - ANDROID_KEYSTORE_BASE64     (optional — release-signing keystore)
+#   - ANDROID_KEY_ALIAS           (optional — keystore alias)
+#   - ANDROID_KEYSTORE_PASSWORD   (optional — keystore password)
+#   - ANDROID_KEY_PASSWORD        (optional — key password)
+# If the keystore secret is absent the APK is built with the debug signing key
+# of the prebuild project (still installable, just signed with a debug cert).
+
+on:
+  # Automatic: run when semver tags are pushed (e.g. v1.0.0, v1.2.3)
+  push:
+    tags:
+      - 'v*'
+  # Manual: from Actions tab → "Run workflow"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to create (e.g. v1.0.0). If empty, uses run number as prerelease.'
+        required: false
+        default: ''
+      prerelease:
+        description: 'Mark release as prerelease'
+        type: boolean
+        default: true
+
+# Permissions required: `contents` for creating releases & pushing tags,
+# `actions` for uploading artifacts. No other scopes needed.
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: build-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            package.json
+            package-lock.json
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: |
+            platforms;android-34
+            build-tools;34.0.0
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            android/.gradle
+          key: gradle-${{ runner.os }}-${{ hashFiles('package*.json') }}-${{ github.sha }}
+          restore-keys: |
+            gradle-${{ runner.os }}-${{ hashFiles('package*.json') }}
+            gradle-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Expo CLI
+        run: npm install --no-save expo-cli@~6.3.0
+
+      - name: Generate native Android project
+        run: npx expo prebuild --platform android --no-install --clean
+
+      - name: Decode keystore (if provided)
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          mkdir -p android/app
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/release.keystore
+          echo "keystore_path=android/app/release.keystore" >> $GITHUB_ENV
+
+      - name: Build release APK (with signing)
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        working-directory: android
+        env:
+          ORG_GRADLE_PROJECT_androidReleaseKeystore: ${{ github.workspace }}/android/app/release.keystore
+          ORG_GRADLE_PROJECT_androidReleaseKeystorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ORG_GRADLE_PROJECT_androidReleaseKeyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ORG_GRADLE_PROJECT_androidReleaseKeyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Build debug APK (no keystore)
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 == '' }}
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Locate built APK
+        id: apk
+        run: |
+          set -e
+          if [ -f android/app/build/outputs/apk/release/app-release.apk ]; then
+            APK="android/app/build/outputs/apk/release/app-release.apk"
+            SUFFIX="release"
+          else
+            APK="android/app/build/outputs/apk/debug/app-debug.apk"
+            SUFFIX="debug"
+          fi
+          APP_VERSION=$(jq -r '.expo.version // "1.0.0"' app.json)
+          echo "apk_path=$APK" >> $GITHUB_OUTPUT
+          echo "apk_suffix=$SUFFIX" >> $GITHUB_OUTPUT
+          echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT
+          ls -lh "$APK"
+
+      - name: Upload APK artifact (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h-dashboard-mobile-${{ steps.apk.outputs.apk_suffix }}-apk
+          path: ${{ steps.apk.outputs.apk_path }}
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Determine release tag
+        id: rel
+        run: |
+          if [ "${{ inputs.release_tag }}" != "" ]; then
+            TAG="${{ inputs.release_tag }}"
+          elif [ -n "${GITHUB_REF_NAME}" ] && echo "${GITHUB_REF_NAME}" | grep -Eq '^v[0-9]'; then
+            TAG="${GITHUB_REF_NAME}"
+          else
+            # Auto tag from run number (e.g. v1.0.0-run-42)
+            TAG="v${{ steps.apk.outputs.app_version }}-run-${{ github.run_number }}"
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "prerelease=${{ inputs.prerelease || 'false' }}" >> $GITHUB_OUTPUT
+          echo "Building release for tag: $TAG"
+
+      - name: Create GitHub Release with APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          APK_NAME="h-dashboard-mobile-${{ steps.apk.outputs.apk_suffix }}-${{ steps.rel.outputs.tag }}.apk"
+          cp "${{ steps.apk.outputs.apk_path }}" "/tmp/$APK_NAME"
+
+          PRERELEASE_FLAG=""
+          if [ "${{ steps.rel.outputs.prerelease }}" = "true" ]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+
+          gh release create "${{ steps.rel.outputs.tag }}" \
+            "/tmp/$APK_NAME" \
+            --title "Android APK ${{ steps.rel.outputs.tag }}" \
+            --notes "## Android APK build \`${{ steps.rel.outputs.tag }}\`
+
+          Built from commit [\`${{ github.sha }}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+
+          - **Type**: ${{ steps.apk.outputs.apk_suffix }} APK
+          - **Version**: ${{ steps.apk.outputs.app_version }}
+          - **From**: ${{ github.ref_name }}
+
+          ### Install
+          Download the \`.apk\` file below and install on your Android device (enable \"Install from unknown sources\" if needed)." \
+            $PRERELEASE_FLAG \
+            --generate-notes
