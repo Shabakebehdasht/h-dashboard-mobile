@@ -49,9 +49,7 @@ export function AuthProvider({ children }) {
       const newToken = response.data.token;
 
       // دریافت اطلاعات کاربر
-      const userResponse = await authAPI.getUser({
-        headers: { Authorization: `Bearer ${newToken}` },
-      });
+            const userResponse = await authAPI.getUser();
 
       await AsyncStorage.setItem('auth_token', newToken);
       await AsyncStorage.setItem('user_data', JSON.stringify(userResponse.data));
