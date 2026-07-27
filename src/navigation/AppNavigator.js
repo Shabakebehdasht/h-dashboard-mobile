@@ -12,19 +12,19 @@ import TodosScreen from '../screens/TodosScreen';
 import CreateTodoScreen from '../screens/CreateTodoScreen';
 import UnitsScreen from '../screens/UnitsScreen';
 import UnitDetailScreen from '../screens/UnitDetailScreen';
+import HardwareScreen from '../screens/HardwareScreen';
+import CalendarScreen from '../screens/CalendarScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// آیکون تب
 const TabIcon = ({ icon, label, focused }) => (
   <Text style={{ fontSize: focused ? 24 : 20, opacity: focused ? 1 : 0.5 }}>
     {icon}
   </Text>
 );
 
-// Stack برای تیکت‌ها
 function TicketsStack() {
   return (
     <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: '#1e293b' }, headerTintColor: '#f1f5f9' }}>
@@ -35,7 +35,6 @@ function TicketsStack() {
   );
 }
 
-// Stack برای تسک‌ها
 function TodosStack() {
   return (
     <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: '#1e293b' }, headerTintColor: '#f1f5f9' }}>
@@ -45,7 +44,6 @@ function TodosStack() {
   );
 }
 
-// Stack برای واحدها
 function UnitsStack() {
   return (
     <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: '#1e293b' }, headerTintColor: '#f1f5f9' }}>
@@ -55,7 +53,6 @@ function UnitsStack() {
   );
 }
 
-// تب بار اصلی
 export default function AppNavigator() {
   return (
     <NavigationContainer>
@@ -65,12 +62,13 @@ export default function AppNavigator() {
           tabBarStyle: {
             backgroundColor: '#1e293b',
             borderTopColor: '#334155',
-            paddingBottom: 8,
-            paddingTop: 8,
-            height: 60,
+            paddingBottom: 6,
+            paddingTop: 6,
+            height: 58,
           },
           tabBarActiveTintColor: '#7c3aed',
           tabBarInactiveTintColor: '#64748b',
+          tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         }}
       >
         <Tab.Screen
@@ -79,6 +77,22 @@ export default function AppNavigator() {
           options={{
             title: 'خانه',
             tabBarIcon: ({ focused }) => <TabIcon icon="🏠" focused={focused} />,
+          }}
+        />
+        <Tab.Screen
+          name="HardwareTab"
+          component={HardwareScreen}
+          options={{
+            title: 'سخت‌افزار',
+            tabBarIcon: ({ focused }) => <TabIcon icon="🖥️" focused={focused} />,
+          }}
+        />
+        <Tab.Screen
+          name="CalendarTab"
+          component={CalendarScreen}
+          options={{
+            title: 'تقویم',
+            tabBarIcon: ({ focused }) => <TabIcon icon="📅" focused={focused} />,
           }}
         />
         <Tab.Screen

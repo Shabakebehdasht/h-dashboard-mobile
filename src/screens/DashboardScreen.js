@@ -4,13 +4,14 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { unitsAPI, ticketsAPI, todosAPI } from '../api/client';
+import { unitsAPI, ticketsAPI, todosAPI, hardwareAPI } from '../api/client';
 
 export default function DashboardScreen({ navigation }) {
   const { user } = useAuth();
   const [stats, setStats] = useState({
     units: 0, tickets: 0, openTickets: 0, completedTickets: 0,
     todos: 0, pendingTodos: 0, completedTodos: 0,
+    hardware: 0,
   });
   const [refreshing, setRefreshing] = useState(false);
 
@@ -20,23 +21,26 @@ export default function DashboardScreen({ navigation }) {
 
   const loadStats = async () => {
     try {
-      const [unitsRes, ticketsRes, todosRes] = await Promise.all([
+      const [unitsRes, ticketsRes, todosRes, hardwareRes] = await Promise.all([
         unitsAPI.list(1),
         ticketsAPI.list({}),
         todosAPI.list({}),
+        hardwareAPI.list({}).catch(() => ({ data: { data: [], meta: { total: 0 } } })),
       ]);
 
       const tickets = ticketsRes.data.data || [];
       const todos = todosRes.data.data || [];
+      const hardwareItems = hardwareRes.data.data || [];
 
       setStats({
         units: unitsRes.data.meta?.total || unitsRes.data.data?.length || 0,
         tickets: ticketsRes.data.meta?.total || tickets.length,
-        openTickets: tickets.filter(t => ['created', 'forwarded'].includes(t.status)).length,
+        openTickets: tickets.filter(t => ['created', 'forwarded', 'accepted'].includes(t.status)).length,
         completedTickets: tickets.filter(t => t.status === 'completed').length,
         todos: todosRes.data.meta?.total || todos.length,
         pendingTodos: todos.filter(t => !t.is_completed).length,
         completedTodos: todos.filter(t => t.is_completed).length,
+        hardware: hardwareRes.data.meta?.total || hardwareItems.length,
       });
     } catch (e) {
       console.log('خطا در بارگذاری آمار:', e);
@@ -76,6 +80,7 @@ export default function DashboardScreen({ navigation }) {
         <StatCard icon="🏢" title="واحدها" value={stats.units} color="#7c3aed" onPress={() => navigation.navigate('UnitsTab')} />
         <StatCard icon="📋" title="تیکت‌ها" value={stats.tickets} color="#f59e0b" onPress={() => navigation.navigate('TicketsTab')} />
         <StatCard icon="✅" title="تسک‌ها" value={stats.todos} color="#10b981" onPress={() => navigation.navigate('TodosTab')} />
+        <StatCard icon="🖥️" title="سخت‌افزار" value={stats.hardware} color="#0ea5e9" onPress={() => navigation.navigate('HardwareTab')} />
       </View>
 
       {/* آمار تیکت‌ها */}

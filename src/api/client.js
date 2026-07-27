@@ -184,4 +184,36 @@ export const reportsAPI = {
   },
 };
 
+// ===== Hardware =====
+export const hardwareAPI = {
+  list: async (params = {}) => {
+    const api = await getApi();
+    return api.get('/hardware', { params });
+  },
+  get: async (id) => {
+    const api = await getApi();
+    return api.get(`/hardware/${id}`);
+  },
+  create: async (data) => {
+    const api = await getApi();
+    return api.post('/hardware', data);
+  },
+  update: async (id, data) => {
+    const api = await getApi();
+    return api.put(`/hardware/${id}`, data);
+  },
+  remove: async (id) => {
+    const api = await getApi();
+    return api.delete(`/hardware/${id}`);
+  },
+};
+
+// ===== AI Chat =====
+export const aiChatAPI = {
+  send: async (message) => {
+    const api = await getApi();
+    return api.post('/ai/hardware', { message });
+  },
+};
+
 export default getApi;
