@@ -68,11 +68,42 @@ jobs:
           java-version: '17'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: |
-            platforms;android-34
-            build-tools;34.0.0
+        env:
+          # Accept ALL SDK licenses non-interactively (sdkmanager prompt workaround on new runners)
+          ANDROID_HOME: /usr/local/lib/android/sdk
+        run: |
+          ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+
+          # The preinstalled sdkmanager on newer runners might be the wrong version.
+          # Find the latest cmdline-tools dir:
+          SDKMANAGER=""
+          for dir in "$ANDROID_HOME/cmdline-tools"/*/bin "$ANDROID_HOME/cmdline-tools/latest/bin"; do
+            if [ -x "$dir/sdkmanager" ]; then
+              SDKMANAGER="$dir/sdkmanager"
+              break
+            fi
+          done
+
+          if [ -z "$SDKMANAGER" ]; then
+            echo "No sdkmanager found — downloading..."
+            curl -sL -o /tmp/cmdline.zip "https://dl.google.com/android/repository/commandlinetools-linux-12266719_latest.zip"
+            mkdir -p "$ANDROID_HOME/cmdline-tools"
+            unzip -q /tmp/cmdline.zip -d /tmp/cmdline/
+            # cmdline-tools gets extracted to cmdline-tools/
+            mkdir -p "$ANDROID_HOME/cmdline-tools/latest"
+            cp -a /tmp/cmdline/cmdline-tools/* "$ANDROID_HOME/cmdline-tools/latest/" 2>/dev/null || \
+            mv /tmp/cmdline/* "$ANDROID_HOME/cmdline-tools/latest/" 2>/dev/null || true
+            SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          fi
+
+          echo "SDK manager: $SDKMANAGER"
+
+          # Accept licenses via yes pipe (works where --licenses prompts hang)
+          yes | "$SDKMANAGER" --licenses 2>&1 || true
+          yes | "$SDKMANAGER" "platforms;android-34" "build-tools;34.0.0" 2>&1
+
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
 
       - name: Cache Gradle
         uses: actions/cache@v4
@@ -89,11 +120,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Expo CLI
-        run: npm install --no-save expo-cli@~6.3.0
-
       - name: Generate native Android project
-        run: npx expo prebuild --platform android --no-install --clean
+        run: npx --yes expo prebuild --platform android --no-install --clean
+
+      - name: Accept Android licenses (Gradle)
+        if: ${{ env.ANDROID_HOME != '' }}
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses 2>&1 || true
 
       # GitHub Actions does not allow `secrets.XYZ` in `if:` expressions.
       # Instead we check env vars that are only set when the secret exists.
