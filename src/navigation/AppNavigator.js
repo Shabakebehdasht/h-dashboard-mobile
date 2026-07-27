@@ -13,6 +13,7 @@ import CreateTodoScreen from '../screens/CreateTodoScreen';
 import UnitsScreen from '../screens/UnitsScreen';
 import UnitDetailScreen from '../screens/UnitDetailScreen';
 import HardwareScreen from '../screens/HardwareScreen';
+import HardwareDetailScreen from '../screens/HardwareDetailScreen';
 import CalendarScreen from '../screens/CalendarScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
@@ -40,6 +41,15 @@ function TodosStack() {
     <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: '#1e293b' }, headerTintColor: '#f1f5f9' }}>
       <Stack.Screen name="TodosList" component={TodosScreen} options={{ title: '✅ تسک‌ها' }} />
       <Stack.Screen name="CreateTodo" component={CreateTodoScreen} options={{ title: 'تسک جدید' }} />
+    </Stack.Navigator>
+  );
+}
+
+function HardwareStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: '#1e293b' }, headerTintColor: '#f1f5f9' }}>
+      <Stack.Screen name="HardwareList" component={HardwareScreen} options={{ title: '🖥️ سخت‌افزار' }} />
+      <Stack.Screen name="HardwareDetail" component={HardwareDetailScreen} options={{ title: 'جزئیات سخت‌افزار' }} />
     </Stack.Navigator>
   );
 }
@@ -81,7 +91,7 @@ export default function AppNavigator() {
         />
         <Tab.Screen
           name="HardwareTab"
-          component={HardwareScreen}
+          component={HardwareStack}
           options={{
             title: 'سخت‌افزار',
             tabBarIcon: ({ focused }) => <TabIcon icon="🖥️" focused={focused} />,
