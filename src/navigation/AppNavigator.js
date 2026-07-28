@@ -16,6 +16,7 @@ import HardwareScreen from '../screens/HardwareScreen';
 import HardwareDetailScreen from '../screens/HardwareDetailScreen';
 import CalendarScreen from '../screens/CalendarScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import AiChatScreen from '../screens/AiChatScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -103,6 +104,18 @@ export default function AppNavigator() {
           options={{
             title: 'تقویم',
             tabBarIcon: ({ focused }) => <TabIcon icon="📅" focused={focused} />,
+          }}
+        />
+        <Tab.Screen
+          name="AiChatTab"
+          component={AiChatScreen}
+          options={{
+            title: 'چت AI',
+            headerShown: true,
+            headerStyle: { backgroundColor: '#1e293b' },
+            headerTintColor: '#f1f5f9',
+            headerTitle: '🤖 چت هوش مصنوعی',
+            tabBarIcon: ({ focused }) => <TabIcon icon="🤖" focused={focused} />,
           }}
         />
         <Tab.Screen
