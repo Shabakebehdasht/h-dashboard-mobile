@@ -14,6 +14,7 @@ import UnitsScreen from '../screens/UnitsScreen';
 import UnitDetailScreen from '../screens/UnitDetailScreen';
 import HardwareScreen from '../screens/HardwareScreen';
 import HardwareDetailScreen from '../screens/HardwareDetailScreen';
+import HardwareFormScreen from '../screens/HardwareFormScreen';
 import CalendarScreen from '../screens/CalendarScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import AiChatScreen from '../screens/AiChatScreen';
@@ -51,6 +52,7 @@ function HardwareStack() {
     <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: '#1e293b' }, headerTintColor: '#f1f5f9' }}>
       <Stack.Screen name="HardwareList" component={HardwareScreen} options={{ title: '🖥️ سخت‌افزار' }} />
       <Stack.Screen name="HardwareDetail" component={HardwareDetailScreen} options={{ title: 'جزئیات سخت‌افزار' }} />
+      <Stack.Screen name="HardwareForm" component={HardwareFormScreen} options={{ title: 'فرم سخت‌افزار' }} />
     </Stack.Navigator>
   );
 }

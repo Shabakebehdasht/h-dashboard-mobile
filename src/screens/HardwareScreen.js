@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, FlatList, TouchableOpacity,
+  View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity,
   RefreshControl, ActivityIndicator, Alert,
 } from 'react-native';
 import { hardwareAPI } from '../api/client';
