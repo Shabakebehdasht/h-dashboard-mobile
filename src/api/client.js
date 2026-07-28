@@ -85,6 +85,11 @@ export const unitsAPI = {
     const api = await getApi();
     return api.get('/units', { params: { page } });
   },
+  // Get all units (for tree building) - uses large per_page
+  all: async () => {
+    const api = await getApi();
+    return api.get('/units', { params: { per_page: 200 } });
+  },
   get: async (id) => {
     const api = await getApi();
     return api.get(`/units/${id}`);
