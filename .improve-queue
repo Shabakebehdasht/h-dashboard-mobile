@@ -9,8 +9,8 @@ DONE | v2.7.0 | Add Units tree view (port from vue-dash)
 DONE | v2.8.0 | Add error boundary component for all screens
 DONE | v2.9.0 | Add CreateHardwareScreen - separate create page instead of modal
 DONE | v2.10.0 | Add dark mode toggle with persistence in ProfileScreen
-INPROGRESS | v2.11.0 | Add today's stats widget on DashboardScreen with last-update timestamp
-PENDING | v2.12.0 | Add logout confirmation with redirect to login in all screens
+DONE | v2.11.0 | Add today's stats widget on DashboardScreen with last-update timestamp
+INPROGRESS | v2.12.0 | Add logout confirmation with redirect to login in all screens
 PENDING | v2.13.0 | Add inline search bar on TicketsScreen header
 PENDING | v2.14.0 | Add swipe-to-delete on TodosScreen with undo toast
 PENDING | v2.15.0 | Add offline indicator banner when API is unreachable
