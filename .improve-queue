@@ -7,8 +7,8 @@ DONE | v2.5.0 | Add quick filter buttons on HardwareScreen (port from vue-dash)
 DONE | v2.6.0 | Add pull-to-refresh on all screens that are missing it
 DONE | v2.7.0 | Add Units tree view (port from vue-dash)
 DONE | v2.8.0 | Add error boundary component for all screens
-INPROGRESS | v2.9.0 | Add CreateHardwareScreen - separate create page instead of modal
-PENDING | v2.10.0 | Add dark mode toggle with persistence in ProfileScreen
+DONE | v2.9.0 | Add CreateHardwareScreen - separate create page instead of modal
+INPROGRESS | v2.10.0 | Add dark mode toggle with persistence in ProfileScreen
 PENDING | v2.11.0 | Add today's stats widget on DashboardScreen with last-update timestamp
 PENDING | v2.12.0 | Add logout confirmation with redirect to login in all screens
 PENDING | v2.13.0 | Add inline search bar on TicketsScreen header
