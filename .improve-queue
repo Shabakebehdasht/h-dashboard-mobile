@@ -5,5 +5,5 @@ DONE | v2.3.0 | Add ticket assign/accept/complete action buttons in TicketDetail
 DONE | v2.4.0 | Add AI Chat screen for hardware queries (port from vue-dash)
 DONE | v2.5.0 | Add quick filter buttons on HardwareScreen (port from vue-dash)
 DONE | v2.6.0 | Add pull-to-refresh on all screens that are missing it
-INPROGRESS | v2.7.0 | Add Units tree view (port from vue-dash)
-PENDING | v2.8.0 | Add error boundary component for all screens
+DONE | v2.7.0 | Add Units tree view (port from vue-dash)
+INPROGRESS | v2.8.0 | Add error boundary component for all screens
