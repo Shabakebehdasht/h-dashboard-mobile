@@ -6,4 +6,16 @@ DONE | v2.4.0 | Add AI Chat screen for hardware queries (port from vue-dash)
 DONE | v2.5.0 | Add quick filter buttons on HardwareScreen (port from vue-dash)
 DONE | v2.6.0 | Add pull-to-refresh on all screens that are missing it
 DONE | v2.7.0 | Add Units tree view (port from vue-dash)
-INPROGRESS | v2.8.0 | Add error boundary component for all screens
+DONE | v2.8.0 | Add error boundary component for all screens
+INPROGRESS | v2.9.0 | Add CreateHardwareScreen - separate create page instead of modal
+PENDING | v2.10.0 | Add dark mode toggle with persistence in ProfileScreen
+PENDING | v2.11.0 | Add today's stats widget on DashboardScreen with last-update timestamp
+PENDING | v2.12.0 | Add logout confirmation with redirect to login in all screens
+PENDING | v2.13.0 | Add inline search bar on TicketsScreen header
+PENDING | v2.14.0 | Add swipe-to-delete on TodosScreen with undo toast
+PENDING | v2.15.0 | Add offline indicator banner when API is unreachable
+PENDING | v2.16.0 | Add splash screen with animated logo
+PENDING | v2.17.0 | Add refresh button in all screen headers
+PENDING | v2.18.0 | Add user avatar upload preview in ProfileScreen
+PENDING | v2.19.0 | Add unit selection dropdown in CreateTicketScreen
+PENDING | v2.20.0 | Add ticket deadline date picker in CreateTicketScreen
