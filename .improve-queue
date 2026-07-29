@@ -13,8 +13,8 @@ DONE | v2.11.0 | Add today's stats widget on DashboardScreen with last-update ti
 DONE | v2.12.0 | Add logout confirmation with redirect to login in all screens
 DONE | v2.13.0 | Add inline search bar on TicketsScreen header
 DONE | v2.14.0 | Add swipe-to-delete on TodosScreen with undo toast
-INPROGRESS | v2.15.0 | Add offline indicator banner when API is unreachable
-PENDING | v2.16.0 | Add splash screen with animated logo
+DONE | v2.15.0 | Add offline indicator banner when API is unreachable
+INPROGRESS | v2.16.0 | Add splash screen with animated logo
 PENDING | v2.17.0 | Add refresh button in all screen headers
 PENDING | v2.18.0 | Add user avatar upload preview in ProfileScreen
 PENDING | v2.19.0 | Add unit selection dropdown in CreateTicketScreen
