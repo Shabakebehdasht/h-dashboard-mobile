@@ -17,5 +17,5 @@ DONE | v2.15.0 | Add offline indicator banner when API is unreachable
 DONE | v2.16.0 | Add splash screen with animated logo
 DONE | v2.17.0 | Add refresh button in all screen headers
 DONE | v2.18.0 | Add user avatar upload preview in ProfileScreen
-INPROGRESS | v2.19.0 | Add unit selection dropdown in CreateTicketScreen
-PENDING | v2.20.0 | Add ticket deadline date picker in CreateTicketScreen
+DONE | v2.19.0 | Add unit selection dropdown in CreateTicketScreen
+INPROGRESS | v2.20.0 | Add ticket deadline date picker in CreateTicketScreen
